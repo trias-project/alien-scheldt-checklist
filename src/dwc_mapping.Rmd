@@ -1,9 +1,8 @@
 ---
 title: "Darwin Core mapping"
-subtitle: "For: my_dataset_title"
+subtitle: "For: Checklist of alien species of the Scheldt estuary"
 author:
-- author_1
-- author_2
+- Lien Reyserhove
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -25,30 +24,18 @@ output:
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = TRUE)
 ```
 
-Install libraries (only required of the libraries have not been installed before):
-
-```{r}
-install.packages("tidyverse")
-install.packages("tidylog")
-install.packages("magrittr")
-install.packages("here")
-install.packages("janitor")
-install.packages("readxl")
-install.packages("digest")
-install.packages("rgbif")
-```
-
 Load libraries:
 
 ```{r message = FALSE}
 library(tidyverse)      # To do data science
+library(googlesheets4)
 library(tidylog)        # To provide feedback on dplyr functions
 library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
 library(janitor)        # To clean input data
 library(readxl)         # To read Excel files
 library(digest)         # To generate hashes
-library(rgbif)          # To use GBIF services
+library(rgbif)
 ```
 
 # Read source data
@@ -56,13 +43,19 @@ library(rgbif)          # To use GBIF services
 Create a data frame `input_data` from the source data:
 
 ```{r}
-input_data <- read_excel(path = here("data", "raw", "checklist.xlsx")) 
+input_data <- read_sheet("https://docs.google.com/spreadsheets/d/1V_rQhyz_AjszobCMxBe-xFWI3kUNLrYzMeqyUNt3Vc4/edit#gid=0", col_types = "c")
 ```
 
 Preview data:
 
 ```{r}
 input_data %>% head(n = 5)
+```
+
+Save as raw data file:
+
+```{r}
+input_data %>% write.csv(here::here("data", "raw", "input_data.csv"), row.names = FALSE)
 ```
 
 # Process source data
@@ -72,7 +65,7 @@ input_data %>% head(n = 5)
 Clean data somewhat:
 
 ```{r}
-input_data %<>% remove_empty("rows")
+input_data %<>% clean_names()
 ```
 
 ## Scientific names
@@ -94,36 +87,6 @@ parsed_names %>%
   filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
 ```
 
-Correct names and reparse:
-
-```{r correct and reparse}
-input_data %<>% mutate(scientific_name = recode(scientific_name,
-  "AseroÙ rubra" = "Asero rubra"
-))
-
-# Redo parsing
-parsed_names <- input_data %>%
-  distinct(scientific_name) %>%
-  pull() %>%
-  parsenames()
-
-# Show names with nomenclatural issues again
-parsed_names %>%
-  select(scientificname, type, parsed, parsedpartially, rankmarker) %>%
-  filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
-```
-
-## Taxon ranks
-
-The nameparser function also provides information about the rank of the taxon (in `rankmarker`). Here we join this information with our checklist. Cleaning these ranks will done in the Taxon Core mapping:
-
-```{r}
-input_data %<>% left_join(
-  parsed_names %>%
-  select(scientificname, rankmarker),
-  by = c("scientific_name" = "scientificname"))
-```
-
 ## Taxon IDs
 
 To link taxa with information in the extension(s), each taxon needs a unique and relatively stable `taxonID`. Here we create one in the form of `dataset_shortname:taxon:hash`, where `hash` is unique code based on scientific name and kingdom (that will remain the same as long as scientific name and kingdom remain the same):
@@ -131,7 +94,7 @@ To link taxa with information in the extension(s), each taxon needs a unique and
 ```{r}
 vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
 input_data %<>% mutate(taxon_id = paste(
-  "my_dataset_shortname", # e.g. "alien-fishes-checklist"
+  "alien-scheldt-checklist",
   "taxon",
   vdigest(paste(scientific_name, kingdom), algo = "md5"),
   sep = ":"
@@ -144,7 +107,7 @@ Show the number of taxa and distributions per kingdom and rank:
 
 ```{r}
 input_data %>%
-  group_by(kingdom, rankmarker) %>%
+  group_by(kingdom, taxon_rank) %>%
   summarize(
     `# taxa` = n_distinct(taxon_id),
     `# distributions` = n()
@@ -177,37 +140,37 @@ Start with record-level terms which contain metadata about the dataset (which is
 ### language
 
 ```{r}
-taxon %<>% mutate(dwc_language = "my_language") # e.g. "en"
+taxon %<>% mutate(dwc_language = "en")
 ```
 
 ### license
 
 ```{r}
-taxon %<>% mutate(dwc_license = "my_license") # e.g. "http://creativecommons.org/publicdomain/zero/1.0/"
+taxon %<>% mutate(dwc_license = "http://creativecommons.org/publicdomain/zero/1.0/") 
 ```
 
 ### rightsHolder
 
 ```{r}
-taxon %<>% mutate(dwc_rightsHolder = "my_rights_holder") # e.g. "INBO"
+taxon %<>% mutate(dwc_rightsHolder = "INBO") # e.g. "INBO"
 ```
 
 ### datasetID
 
 ```{r}
-taxon %<>% mutate(dwc_datasetID = "my_dataset_doi") # e.g. "https://doi.org/10.15468/xvuzfh"
+taxon %<>% mutate(dwc_datasetID = "") 
 ```
 
 ### institutionCode
 
 ```{r}
-taxon %<>% mutate(dwc_institutionCode = "my_institution_code") # e.g. "INBO"
+taxon %<>% mutate(dwc_institutionCode = "INBO")
 ```
 
 ### datasetName
 
 ```{r}
-taxon %<>% mutate(dwc_datasetName = "my_dataset_title") # e.g. "Checklist of non-native freshwater fishes in Flanders, Belgium"
+taxon %<>% mutate(dwc_datasetName = "Checklist of alien species of the Scheldt estuary, Belgium")
 ```
 
 The following terms contain information about the taxon:
@@ -226,19 +189,40 @@ taxon %<>% mutate(dwc_scientificName = scientific_name)
 
 ### kingdom
 
-Inspect values:
-
-```{r}
-taxon %>%
-  group_by(kingdom) %>%
-  count()
-```
-
-Map values:
-
 ```{r}
 taxon %<>% mutate(dwc_kingdom = kingdom)
 ```
+
+### phylum
+
+```{r}
+taxon %<>% mutate(dwc_phylum = phylum)
+```
+
+### class
+
+```{r}
+taxon %<>% mutate(dwc_class = class)
+```
+
+### order
+
+```{r}
+taxon %<>% mutate(dwc_order = order)
+```
+
+### family
+
+```{r}
+taxon %<>% mutate(dwc_family = family)
+```
+
+### genus
+
+```{r}
+taxon %<>% mutate(dwc_genus = genus)
+```
+
 
 ### taxonRank
 
@@ -246,35 +230,20 @@ Inspect values:
 
 ```{r}
 taxon %>%
-  group_by(rankmarker) %>%
+  group_by(taxon_rank) %>%
   count()
 ```
 
 Map values by recoding to the [GBIF rank vocabulary](http://rs.gbif.org/vocabulary/gbif/rank_2015-04-24.xml):
 
 ```{r}
-taxon %<>% mutate(dwc_taxonRank = recode(rankmarker,
-  "agg."      = "speciesAggregate",
-  "infrasp."  = "infraspecificname",
-  "sp."       = "species",
-  "var."      = "variety",
-  .default    = "",
-  .missing    = ""
-))
-```
-
-Inspect mapped values: 
-
-```{r}
-taxon %>%
-  group_by(rankmarker, dwc_taxonRank) %>%
-  count()
+taxon %<>% mutate(dwc_taxonRank = taxon_rank)
 ```
 
 ### nomenclaturalCode
 
 ```{r}
-taxon %<>% mutate(dwc_nomenclaturalCode = "my_nomenclaturalCode") # e.g. "ICZN"
+taxon %<>% mutate(dwc_nomenclaturalCode = "ICZN")
 ```
 
 ## Post-processing
@@ -323,48 +292,28 @@ Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/dis
 distribution %<>% mutate(dwc_taxonID = taxon_id)
 ```
 
+### locationID
+
+```{r}
+distribution %>% group_by(country_code) %>%
+  count()
+```
+
+Map values to [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country codes
+
+```{r}
+distribution %<>% mutate(dwc_locationID = "ISO_3166-2:BE")
+```
+
 ### locality
 
-Inspect values:
+Use the country name to map `locality`:
 
 ```{r}
-distribution %>%
-  group_by(country_code, locality) %>%
-  count()
-```
-
-Map values to `locality` if provided, otherwise use the country name:
-
-```{r}
-distribution %<>% mutate(dwc_locality = case_when(
-  !is.na(locality) ~ locality,
-  country_code == "BE" ~ "Belgium",
-  country_code == "GB" ~ "United Kingdom",
-  country_code == "MK" ~ "Macedonia",
-  country_code == "NL" ~ "The Netherlands",
-  TRUE ~ "" # In other cases leave empty
-))
-```
-
-Inspect mapped values: 
-
-```{r}
-distribution %>%
-  group_by(country_code, locality, dwc_locality) %>%
-  count()
+distribution %<>% mutate(dwc_locality = "Belgium")
 ```
 
 ### countryCode
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(country_code) %>%
-  count()
-```
-
-Map values:
 
 ```{r}
 distribution %<>% mutate(dwc_countryCode = country_code) 
@@ -386,49 +335,29 @@ Map values:
 distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status) 
 ```
 
-### threatStatus
+### establishmentMeans
 
-Inspect values:
+```{r}
+distribution %<>% mutate(dwc_establishmentMeans = "introduced") 
+```
+
+### eventDate
+
+Inspect `date_first_observation`:
 
 ```{r}
 distribution %>%
-  group_by(threat_status) %>%
-  count()
+  group_by(date_first_observation) %>%
+  count() %>% 
+  View()
 ```
 
-Map values by recoding to the [IUCN threat status vocabulary](http://rs.gbif.org/vocabulary/iucn/threat_status.xml):
+Remove `?` or `<`
 
 ```{r}
-distribution %<>% mutate(dwc_threatStatus = recode(threat_status,
-  "endangered" = "EN",
-  "vulnerable" = "VU"
-))
+distribution %<>% mutate(date_first_observation = str_remove_all(date_first_observation,"[?|<|>]"))
 ```
 
-Inspect mapped values: 
-
-```{r}
-distribution %>%
-  group_by(threat_status, dwc_threatStatus) %>%
-  count()
-```
-
-### source
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(source) %>%
-  count() %>%
-  head() # Remove to show all values
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_source = source) 
-```
 
 ### occurrenceRemarks
 
