@@ -112,7 +112,7 @@ taxon %<>% mutate(dwc_license = "http://creativecommons.org/publicdomain/zero/1.
 ### rightsHolder
 
 ```{r}
-taxon %<>% mutate(dwc_rightsHolder = "INBO") # e.g. "INBO"
+taxon %<>% mutate(dwc_rightsHolder = "INBO")
 ```
 
 ### datasetID
