@@ -263,11 +263,6 @@ distribution %<>% mutate(dwc_taxonID = taxon_id)
 
 ### locationID
 
-```{r}
-distribution %>% group_by(country_code) %>%
-  count()
-```
-
 Map values to [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country codes
 
 ```{r}
@@ -279,7 +274,7 @@ distribution %<>% mutate(dwc_locationID = "ISO_3166-2:BE")
 Use the country name to map `locality`:
 
 ```{r}
-distribution %<>% mutate(dwc_locality = "Belgium")
+distribution %<>% mutate(dwc_locality = location)
 ```
 
 ### countryCode
@@ -305,6 +300,8 @@ distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status)
 ```
 
 ### establishmentMeans
+
+Information for `establishmentMeans` is contained in the field `origin`. These should be conform 
 
 ```{r}
 distribution %<>% mutate(dwc_establishmentMeans = "introduced") 
