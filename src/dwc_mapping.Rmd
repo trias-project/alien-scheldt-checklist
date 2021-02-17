@@ -108,8 +108,16 @@ Clean dataset names:
 input_data %<>% clean_names()
 ```
 
+## Scientific Name
+
+We here use the scientific name provided by the GBIF backbone (`gbif_scientific_name`, to include authorship information). However, in some cases, the scientific name provided by the checklist authors (`scientific_name`) will be kept as the match with the GBIF backbone is `FUZZY` or `HIGHERRANK`
+
+(for now, use a copy of `gbif_scientific_name`)
 
 
+```{r}
+input_data %<>% mutate(scientificName = gbif_scientific_name)
+```
 
 ## Generate Taxon ID
 
@@ -120,7 +128,7 @@ vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
 input_data %<>% mutate(taxon_id = paste(
   "alien-scheldt-checklist",
   "taxon",
-  vdigest(paste(scientific_name, kingdom), algo = "md5"),
+  vdigest(paste(scientificName, kingdom), algo = "md5"),
   sep = ":"
 ))
 ```
@@ -188,7 +196,7 @@ taxon %<>% mutate(dwc_taxonID = taxon_id)
 ### scientificName
 
 ```{r}
-taxon %<>% mutate(dwc_scientificName = scientific_name)
+taxon %<>% mutate(dwc_scientificName = scientificName)
 ```
 
 ### kingdom
@@ -236,7 +244,7 @@ taxon %<>% mutate(dwc_taxonRank = taxon_rank)
 ### nomenclaturalCode
 
 ```{r}
-taxon %<>% mutate(dwc_nomenclaturalCode = "ICZN")
+taxon %<>% mutate(dwc_nomenclaturalCode = nomenclatural_code)
 ```
 
 ## Create distribution extension
