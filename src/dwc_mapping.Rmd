@@ -110,10 +110,7 @@ input_data %<>% clean_names()
 
 ## Scientific Name
 
-We here use the scientific name provided by the GBIF backbone (`gbif_scientific_name`, to include authorship information). However, in some cases, the scientific name provided by the checklist authors (`scientific_name`) will be kept as the match with the GBIF backbone is `FUZZY` or `HIGHERRANK`
-
-(for now, use a copy of `gbif_scientific_name`)
-
+We here use the scientific name provided by the GBIF backbone (`gbif_scientific_name`, to include authorship information).
 
 ```{r}
 input_data %<>% mutate(scientificName = gbif_scientific_name)
@@ -266,7 +263,7 @@ distribution %<>% mutate(dwc_taxonID = taxon_id)
 Map values to [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country codes
 
 ```{r}
-distribution %<>% mutate(dwc_locationID = "ISO_3166-2:BE")
+distribution %<>% mutate(dwc_locationID = "ISO_3166-2:BE-VLG")
 ```
 
 ### locality
@@ -301,7 +298,15 @@ distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status)
 
 ### establishmentMeans
 
-Information for `establishmentMeans` is contained in the field `origin`. These should be conform 
+Information for `establishmentMeans` is contained in the field `origin`. 
+
+```{r}
+distribution %>%
+  group_by(origin) %>%
+  count()
+```
+
+Map values:
 
 ```{r}
 distribution %<>% mutate(dwc_establishmentMeans = "introduced") 
@@ -343,6 +348,15 @@ distribution %<>% mutate(dwc_eventDate = case_when(
 ))
 ```
 
+Inspect mapping:
+
+```{r}
+distribution %>%
+  group_by(date_first_observation, date_last_observation, dwc_eventDate) %>%
+  count() 
+```
+
+
 ### occurrenceRemarks
 
 Inspect values:
@@ -357,6 +371,12 @@ Map values:
 
 ```{r}
 distribution %<>% mutate(dwc_occurrenceRemarks = remarks) 
+```
+
+### source
+
+```{r}
+distribution %<>% mutate(dwc_source = source) 
 ```
 
 ## Create species profile extension
@@ -412,14 +432,16 @@ species_profile %>%
   summarize(records = n())
 ```
 
+
 ## Create description extension
 
 In the description extension we want to include several important characteristics (hereafter refered to as descriptors) about the species:
 
 * Native range
+* Introduction pathway
 * Degree of establishment
 
-The structure of the description extension is slightly different from the other core/extension files: information for a specific taxon (linked to taxonID) is provided in **multipele** lines within the csv file: one line per taxon per descriptor. In this way, we are able to include multipele descriptors for each species. 
+The structure of the description extension is slightly different from the other core/extension files: information for a specific taxon (linked to taxonID) is provided in **multiple** lines within the csv file: one line per taxon per descriptor. In this way, we are able to include multipele descriptors for each species. 
 
 For each descriptor, we create a separate dataframe to process the specific information. We always specify *which descriptor* we map (`type` column) and its *specific content* (`description` column). After the mapping of these Darwin Core terms `type` and `value`, we merge the dataframes to generate one single description extension. We then continue the mapping process by adding the other Darwin Core terms (which content is independent of the type of descriptor, such as `language`).
 
@@ -444,7 +466,8 @@ native_range %>%
 ```{r}
 native_range %<>% separate(native_range, 
   into = c("native_range_1", "native_range_2", "native_range_3"),
-  sep = "\\s\\|\\s")
+  sep = "\\s\\|\\s",
+  remove = FALSE)
 ```
 
 Gather in a `key` and `value` column:
@@ -485,6 +508,7 @@ Create a `type` field to indicate the type of description:
 native_range %<>% mutate(type = "native range")
 ```
 
+
 ### Degree of establishment
 
 Here, we use the [invasion stage vocabulary from Blackburn et al. (2011)](http://doc.rero.ch/record/24725/files/bach_puf.pdf) to standardize this information.
@@ -510,15 +534,80 @@ degree_of_establishment %<>% mutate(description = degree_of_establishment)
 Create `type`:
 
 ```{r}
-degree_of_establishment %<>% mutate(type = "degree_of_establishment")
+degree_of_establishment %<>% mutate(type = "degree of establishment")
 ```
+
+### Pathway of introduction
+
+Here, we use the vocabulary proposed by [CBD standard](https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf) to standardize this information.
+
+```{r}
+pathway <- input_data
+```
+
+Summarize content
+
+```{r}
+pathway %>%
+  group_by(introduction_pathway) %>%
+  count()
+```
+
+`native_range` contains multiple values (currently not more than 2), so we separate it in 2 columns:
+
+```{r}
+pathway %<>% separate(introduction_pathway, 
+  into = c("pathway_1", "pathway_2"),
+  sep = "\\s\\|\\s",
+  remove = FALSE)
+```
+
+Gather in a `key` and `value` column:
+
+```{r}
+pathway %<>% gather(
+  key, value,
+  pathway_1, pathway_2,
+  na.rm = TRUE, # Also removes records for which there is no native_range_1
+  convert = FALSE
+)
+```
+
+Sumarize `value`
+
+```{r}
+pathway %>%
+  group_by(value) %>%
+  count()
+```
+
+Generate `description`:
+
+```{r}
+pathway %<>% mutate(description = value) 
+```
+
+
+Drop the `key` and `value` columns:
+
+```{r}
+pathway %<>% select(-key, -value)
+```
+
+
+Create a `type` field to indicate the type of description:
+
+```{r}
+pathway %<>% mutate(type = "pathway of introduction")
+```
+
 
 ### Union description
 
 Union native range and degree of establishment:
 
 ```{r start_description_ext}
-description_ext <- bind_rows(native_range, degree_of_establishment)
+description_ext <- bind_rows(native_range, degree_of_establishment, pathway)
 ```
 
 Map the data to [Taxon Description](http://rs.gbif.org/extension/gbif/1.0/description.xml):
