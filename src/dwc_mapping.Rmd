@@ -181,7 +181,7 @@ taxon %<>% mutate(dwc_institutionCode = "INBO")
 ### datasetName
 
 ```{r}
-taxon %<>% mutate(dwc_datasetName = "Checklist of alien species of the Scheldt estuary, Belgium")
+taxon %<>% mutate(dwc_datasetName = "Checklist of alien species in the Scheldt estuary in Flanders, Belgium")
 ```
 
 ### taxonID
