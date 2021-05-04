@@ -309,7 +309,7 @@ distribution %>%
 Map values:
 
 ```{r}
-distribution %<>% mutate(dwc_establishmentMeans = "introduced") 
+distribution %<>% mutate(dwc_establishmentMeans = origin) 
 ```
 
 ### eventDate
