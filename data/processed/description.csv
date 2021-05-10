@@ -1,7 +1,4 @@
 taxonID,description,type,language
-alien-scheldt-checklist:taxon:04fdbc40557d38c38a2657639509f3b7,Asia,native range,en
-alien-scheldt-checklist:taxon:04fdbc40557d38c38a2657639509f3b7,established,degree of establishment,en
-alien-scheldt-checklist:taxon:04fdbc40557d38c38a2657639509f3b7,stowaway_ship,pathway of introduction,en
 alien-scheldt-checklist:taxon:05cccb416639383038a6c5e2a61831f5,Ponto-caspian,native range,en
 alien-scheldt-checklist:taxon:05cccb416639383038a6c5e2a61831f5,casual,degree of establishment,en
 alien-scheldt-checklist:taxon:05cccb416639383038a6c5e2a61831f5,corridor_water,pathway of introduction,en
@@ -87,6 +84,9 @@ alien-scheldt-checklist:taxon:55f7ddf71c4e3d956b5e056a85032bde,corridor_water,pa
 alien-scheldt-checklist:taxon:582fd8bca5df49e49c46b970d3a328c8,Northern America,native range,en
 alien-scheldt-checklist:taxon:582fd8bca5df49e49c46b970d3a328c8,established,degree of establishment,en
 alien-scheldt-checklist:taxon:582fd8bca5df49e49c46b970d3a328c8,stowaway_ballast_water,pathway of introduction,en
+alien-scheldt-checklist:taxon:5f7ddbf61fd21a57789d27d96e6459d1,Southern America,native range,en
+alien-scheldt-checklist:taxon:5f7ddbf61fd21a57789d27d96e6459d1,colonizing,degree of establishment,en
+alien-scheldt-checklist:taxon:5f7ddbf61fd21a57789d27d96e6459d1,stowaway_ballast_water,pathway of introduction,en
 alien-scheldt-checklist:taxon:62e7496b276ce9f088c367d51394849d,Northern America,native range,en
 alien-scheldt-checklist:taxon:62e7496b276ce9f088c367d51394849d,casual,degree of establishment,en
 alien-scheldt-checklist:taxon:62e7496b276ce9f088c367d51394849d,stowaway_ballast_water,pathway of introduction,en
@@ -167,6 +167,9 @@ alien-scheldt-checklist:taxon:d0a6fba11fb4a2c7f1e82adbed52314b,escape_aquacultur
 alien-scheldt-checklist:taxon:d234b3d2947271943d693bae0cfddc17,Northern America,native range,en
 alien-scheldt-checklist:taxon:d234b3d2947271943d693bae0cfddc17,casual,degree of establishment,en
 alien-scheldt-checklist:taxon:d234b3d2947271943d693bae0cfddc17,escape_aquaculture,pathway of introduction,en
+alien-scheldt-checklist:taxon:dd555002d968fa68fb894897a73d8f28,Asia,native range,en
+alien-scheldt-checklist:taxon:dd555002d968fa68fb894897a73d8f28,established,degree of establishment,en
+alien-scheldt-checklist:taxon:dd555002d968fa68fb894897a73d8f28,stowaway_ship,pathway of introduction,en
 alien-scheldt-checklist:taxon:df52689bfabe7ba0864460028ab0e35f,Northern America,native range,en
 alien-scheldt-checklist:taxon:df52689bfabe7ba0864460028ab0e35f,casual,degree of establishment,en
 alien-scheldt-checklist:taxon:e3b8090433cb4788ada94499d1b07e5b,casual,degree of establishment,en

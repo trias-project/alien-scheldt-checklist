@@ -1,5 +1,4 @@
 taxonID,locationID,locality,countryCode,occurrenceStatus,establishmentMeans,eventDate,occurrenceRemarks,source
-alien-scheldt-checklist:taxon:04fdbc40557d38c38a2657639509f3b7,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1927,,
 alien-scheldt-checklist:taxon:05cccb416639383038a6c5e2a61831f5,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2008,,https://doi.org/10.3391/ai.2013.8.1.04
 alien-scheldt-checklist:taxon:121ef263ba0aafabecae06857b7c93ef,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2014,,
 alien-scheldt-checklist:taxon:19909f80ef23d57428b1160a73f98a0b,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2007,,
@@ -26,6 +25,7 @@ alien-scheldt-checklist:taxon:4b6eb5721fc16496c4092047f9cc79cc,ISO_3166-2:BE-VLG
 alien-scheldt-checklist:taxon:52280b81c6b277f031faa79ecde9fecf,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2019,,unpublished records INBO
 alien-scheldt-checklist:taxon:55f7ddf71c4e3d956b5e056a85032bde,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1993,,
 alien-scheldt-checklist:taxon:582fd8bca5df49e49c46b970d3a328c8,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2005,,"Soors, J., Faasse, M., Stevens, M., Verbessem, I., De Regge, N., & Van den Bergh, E. (2010). New crustacean invaders in the Schelde estuary (Belgium). BELGIAN JOURNAL OF ZOOLOGY, 140(1), 3-10."
+alien-scheldt-checklist:taxon:5f7ddbf61fd21a57789d27d96e6459d1,ISO_3166-2:BE-VLG,,,,,"",,"van Haaren, T., Worsfold, T.M., Stelbrink, B., Collado, G.A., Gonçalves, I.C.B., Serra, W.S., Scarabino, F., Gittenberger, A., & Gittenberger, E., 2021. Heleobia charruana (Gastropoda,Trun catelloidea, Cochliopidae), a South American brackish water snail in northwest European estuaries. — Basteria 85 (1): 82–91. Leiden. Published 7 May 2021."
 alien-scheldt-checklist:taxon:62e7496b276ce9f088c367d51394849d,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1996,,"Faasse, M.; Van Moorsel, G. (2003). The North-American amphipods, Melita nitida Smith, 1873 and Incisocalliope aestuarius (Watling and Maurer, 1973) (Crustacea: Amphipoda: Gammaridea), introduced to the Western Scheldt estuary (The Netherlands). Aquatic Ecology. 37(1): 13-22."
 alien-scheldt-checklist:taxon:647f3f5d79c26df46062cb810e18cec2,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2003,,"Soors, J., Faasse, M., Stevens, M., Verbessem, I., De Regge, N., & Van den Bergh, E. (2010). New crustacean invaders in the Schelde estuary (Belgium). BELGIAN JOURNAL OF ZOOLOGY, 140(1), 3-10."
 alien-scheldt-checklist:taxon:7a948283be983f120a8cf4261cdc74b3,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2019,,
@@ -50,6 +50,7 @@ alien-scheldt-checklist:taxon:c3a682c295a154ff7c033d4590e33723,ISO_3166-2:BE-VLG
 alien-scheldt-checklist:taxon:c9f9114060eabfdcec5751cb4aa0f84d,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2010,,"Soors, J., van Haaren, T., Tarmo, T., & Speybroeck, J. (2013). Bratislavia dadayi (Michaelsen, 1905) (Annelida: Clitellata: Naididae): A new non-indigenous species for Europe, and other non-native annelids in the Schelde estuary. Aquatic Invasions, 8(1), 37-44. https://doi.org/10.3391/ai.2013.8.1.04"
 alien-scheldt-checklist:taxon:d0a6fba11fb4a2c7f1e82adbed52314b,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1985,,"Soors, J., Faasse, M., Stevens, M., Verbessem, I., De Regge, N., & Van den Bergh, E. (2010). New crustacean invaders in the Schelde estuary (Belgium). BELGIAN JOURNAL OF ZOOLOGY, 140(1), 3-10."
 alien-scheldt-checklist:taxon:d234b3d2947271943d693bae0cfddc17,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2008,,
+alien-scheldt-checklist:taxon:dd555002d968fa68fb894897a73d8f28,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1927,,
 alien-scheldt-checklist:taxon:df52689bfabe7ba0864460028ab0e35f,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2007,,
 alien-scheldt-checklist:taxon:e3b8090433cb4788ada94499d1b07e5b,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2005,,
 alien-scheldt-checklist:taxon:e4427930550df142ab1c33d646f8a78c,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,"",,
