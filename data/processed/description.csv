@@ -84,9 +84,6 @@ alien-scheldt-checklist:taxon:55f7ddf71c4e3d956b5e056a85032bde,corridor_water,pa
 alien-scheldt-checklist:taxon:582fd8bca5df49e49c46b970d3a328c8,Northern America,native range,en
 alien-scheldt-checklist:taxon:582fd8bca5df49e49c46b970d3a328c8,established,degree of establishment,en
 alien-scheldt-checklist:taxon:582fd8bca5df49e49c46b970d3a328c8,stowaway_ballast_water,pathway of introduction,en
-alien-scheldt-checklist:taxon:5f7ddbf61fd21a57789d27d96e6459d1,Southern America,native range,en
-alien-scheldt-checklist:taxon:5f7ddbf61fd21a57789d27d96e6459d1,colonizing,degree of establishment,en
-alien-scheldt-checklist:taxon:5f7ddbf61fd21a57789d27d96e6459d1,stowaway_ballast_water,pathway of introduction,en
 alien-scheldt-checklist:taxon:62e7496b276ce9f088c367d51394849d,Northern America,native range,en
 alien-scheldt-checklist:taxon:62e7496b276ce9f088c367d51394849d,casual,degree of establishment,en
 alien-scheldt-checklist:taxon:62e7496b276ce9f088c367d51394849d,stowaway_ballast_water,pathway of introduction,en
@@ -190,6 +187,9 @@ alien-scheldt-checklist:taxon:ebf7119fedbfe9db6ae753f76c0ccd7c,stowaway_ballast_
 alien-scheldt-checklist:taxon:ec8180139d1510655d652ad3c6ea5c83,Ponto-caspian,native range,en
 alien-scheldt-checklist:taxon:ec8180139d1510655d652ad3c6ea5c83,casual,degree of establishment,en
 alien-scheldt-checklist:taxon:ec8180139d1510655d652ad3c6ea5c83,release_fishery,pathway of introduction,en
+alien-scheldt-checklist:taxon:f23876efb4ffd77930555b63c9498e6c,Southern America,native range,en
+alien-scheldt-checklist:taxon:f23876efb4ffd77930555b63c9498e6c,colonizing,degree of establishment,en
+alien-scheldt-checklist:taxon:f23876efb4ffd77930555b63c9498e6c,stowaway_ballast_water,pathway of introduction,en
 alien-scheldt-checklist:taxon:f9aa36aed006236694ebf2f3641b680f,Northern America,native range,en
 alien-scheldt-checklist:taxon:f9aa36aed006236694ebf2f3641b680f,established,degree of establishment,en
 alien-scheldt-checklist:taxon:f9aa36aed006236694ebf2f3641b680f,stowaway,pathway of introduction,en
