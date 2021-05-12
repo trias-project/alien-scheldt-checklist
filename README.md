@@ -6,12 +6,12 @@ This repository contains the functionality to standardize the Checklist of alien
 
 ## Workflow
 
-[source data](link) → Darwin Core [mapping script](link) → generated [Darwin Core files](link)
+[source data](https://github.com/trias-project/alien-scheldt-checklist/blob/master/data/raw) → Darwin Core [mapping script](https://github.com/trias-project/alien-scheldt-checklist/blob/master/src/dwc_mapping.Rmd) → generated [Darwin Core files](https://github.com/trias-project/alien-scheldt-checklist/blob/master/data/processed)
 
 ## Published dataset
 
-* [Dataset on the IPT](link)
-* [Dataset on GBIF](link)
+* [Dataset on the IPT](https://ipt.inbo.be/resource?r=alien-scheldt-checklist)
+* [Dataset on GBIF](https://doi.org/10.15468/8zq9s4)
 
 ## Repo structure
 
