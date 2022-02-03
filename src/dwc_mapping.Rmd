@@ -588,7 +588,7 @@ pathway %>%
 Generate `description`:
 
 ```{r}
-pathway %<>% mutate(description = value) 
+pathway %<>% mutate(description = mapped_value) 
 ```
 
 
