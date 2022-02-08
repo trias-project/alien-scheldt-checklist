@@ -7,7 +7,7 @@ alien-scheldt-checklist:taxon:121ef263ba0aafabecae06857b7c93ef,casual,degree of 
 alien-scheldt-checklist:taxon:121ef263ba0aafabecae06857b7c93ef,cbd_2014_pathway:corridor_water,pathway,en
 alien-scheldt-checklist:taxon:19909f80ef23d57428b1160a73f98a0b,Northern America,native range,en
 alien-scheldt-checklist:taxon:19909f80ef23d57428b1160a73f98a0b,casual,degree of establishment,en
-alien-scheldt-checklist:taxon:19909f80ef23d57428b1160a73f98a0b,cbd_2014_pathway:contaminant_plant,pathway,en
+alien-scheldt-checklist:taxon:19909f80ef23d57428b1160a73f98a0b,cbd_2014_pathway:contaminant_on_plants,pathway,en
 alien-scheldt-checklist:taxon:1d0c1dfbd9ebb210d954358fbd7d0f09,Ponto-caspian,native range,en
 alien-scheldt-checklist:taxon:1d0c1dfbd9ebb210d954358fbd7d0f09,established,degree of establishment,en
 alien-scheldt-checklist:taxon:1d0c1dfbd9ebb210d954358fbd7d0f09,cbd_2014_pathway:corridor_water,pathway,en
@@ -151,7 +151,7 @@ alien-scheldt-checklist:taxon:b5faf5450d6736c856c7e3da00ff5491,cbd_2014_pathway:
 alien-scheldt-checklist:taxon:bba5475fe78d882d1e138321880e67a0,Asia,native range,en
 alien-scheldt-checklist:taxon:bba5475fe78d882d1e138321880e67a0,established,degree of establishment,en
 alien-scheldt-checklist:taxon:bba5475fe78d882d1e138321880e67a0,cbd_2014_pathway:escape_pet,pathway,en
-alien-scheldt-checklist:taxon:bba5475fe78d882d1e138321880e67a0,cbd_2014_pathway:contaminant_plant,pathway,en
+alien-scheldt-checklist:taxon:bba5475fe78d882d1e138321880e67a0,cbd_2014_pathway:contaminant_on_plants,pathway,en
 alien-scheldt-checklist:taxon:c3a682c295a154ff7c033d4590e33723,Asia,native range,en
 alien-scheldt-checklist:taxon:c3a682c295a154ff7c033d4590e33723,colonizing,degree of establishment,en
 alien-scheldt-checklist:taxon:c3a682c295a154ff7c033d4590e33723,cbd_2014_pathway:stowaway_ballast_water,pathway,en
@@ -160,7 +160,7 @@ alien-scheldt-checklist:taxon:c9f9114060eabfdcec5751cb4aa0f84d,Africa,native ran
 alien-scheldt-checklist:taxon:c9f9114060eabfdcec5751cb4aa0f84d,Australia,native range,en
 alien-scheldt-checklist:taxon:c9f9114060eabfdcec5751cb4aa0f84d,casual,degree of establishment,en
 alien-scheldt-checklist:taxon:c9f9114060eabfdcec5751cb4aa0f84d,cbd_2014_pathway:escape_pet,pathway,en
-alien-scheldt-checklist:taxon:c9f9114060eabfdcec5751cb4aa0f84d,cbd_2014_pathway:contaminant_plant,pathway,en
+alien-scheldt-checklist:taxon:c9f9114060eabfdcec5751cb4aa0f84d,cbd_2014_pathway:contaminant_on_plants,pathway,en
 alien-scheldt-checklist:taxon:d0a6fba11fb4a2c7f1e82adbed52314b,Northern America,native range,en
 alien-scheldt-checklist:taxon:d0a6fba11fb4a2c7f1e82adbed52314b,established,degree of establishment,en
 alien-scheldt-checklist:taxon:d0a6fba11fb4a2c7f1e82adbed52314b,cbd_2014_pathway:escape_aquaculture,pathway,en
