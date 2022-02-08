@@ -551,7 +551,7 @@ pathway %>%
   count()
 ```
 
-`native_range` contains multiple values (currently not more than 2), so we separate it in 2 columns:
+`pathway` contains multiple values (currently not more than 2), so we separate it in 2 columns:
 
 ```{r}
 pathway %<>% separate(introduction_pathway, 
@@ -602,7 +602,7 @@ pathway %<>% select(-key, -value)
 Create a `type` field to indicate the type of description:
 
 ```{r}
-pathway %<>% mutate(type = "pathway of introduction")
+pathway %<>% mutate(type = "pathway")
 ```
 
 
