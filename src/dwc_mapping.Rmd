@@ -42,7 +42,7 @@ library(inborutils)     # To wrap GBIF API data
 Create a data frame `input_data` from the source data:
 
 ```{r}
-input_data <- read_sheet("https://docs.google.com/spreadsheets/d/1V_rQhyz_AjszobCMxBe-xFWI3kUNLrYzMeqyUNt3Vc4/edit#gid=0", col_types = "c")
+input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRXZwIAQntjB8Z0vBQ0koflTdrMtu1mM2EHZNHkeO5XlHgEdBcSQ5Zwk-bHe_qMedyZ46GEDWFT3NEa/pub?output=csv")
 ```
 
 Preview data:
@@ -83,15 +83,6 @@ input_data <-
     select(-scientificName, -matchType, -confidence, -rank)
 ```
 
-Save to googlesheet:
-
-```{r}
-write_sheet(
-  input_data, 
-  ss = "1V_rQhyz_AjszobCMxBe-xFWI3kUNLrYzMeqyUNt3Vc4", 
-  sheet = "checklist")
-```
-
 Save as raw data file:
 
 ```{r}
@@ -107,6 +98,13 @@ Clean dataset names:
 ```{r}
 input_data %<>% clean_names()
 ```
+
+Recode `date_last_observation` as character
+
+```{r}
+input_data %<>% mutate(date_last_observation = as.character(date_last_observation)) 
+```
+
 
 ## Scientific Name
 
@@ -553,7 +551,7 @@ pathway %>%
   count()
 ```
 
-`native_range` contains multiple values (currently not more than 2), so we separate it in 2 columns:
+`pathway` contains multiple values (currently not more than 2), so we separate it in 2 columns:
 
 ```{r}
 pathway %<>% separate(introduction_pathway, 
@@ -573,18 +571,24 @@ pathway %<>% gather(
 )
 ```
 
+Add prefix `cbd_2014_pathway:`
+
+```{r}
+pathway %<>% mutate(mapped_value = paste ("cbd_2014_pathway", value, sep = ":"))
+```
+
 Sumarize `value`
 
 ```{r}
 pathway %>%
-  group_by(value) %>%
+  group_by(mapped_value) %>%
   count()
 ```
 
 Generate `description`:
 
 ```{r}
-pathway %<>% mutate(description = value) 
+pathway %<>% mutate(description = mapped_value) 
 ```
 
 
@@ -598,7 +602,7 @@ pathway %<>% select(-key, -value)
 Create a `type` field to indicate the type of description:
 
 ```{r}
-pathway %<>% mutate(type = "pathway of introduction")
+pathway %<>% mutate(type = "pathway")
 ```
 
 
