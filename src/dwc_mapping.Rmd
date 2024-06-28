@@ -123,7 +123,7 @@ vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
 input_data %<>% mutate(taxon_id = paste(
   "alien-scheldt-checklist",
   "taxon",
-  vdigest(paste(scientificName, kingdom), algo = "md5"),
+  taxon_id_hash,
   sep = ":"
 ))
 ```
