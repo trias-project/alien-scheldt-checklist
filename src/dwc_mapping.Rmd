@@ -43,7 +43,7 @@ library(inborutils)     # To wrap GBIF API data
 Create a data frame `input_data` from the source data:
 
 ```{r}
-input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRXZwIAQntjB8Z0vBQ0koflTdrMtu1mM2EHZNHkeO5XlHgEdBcSQ5Zwk-bHe_qMedyZ46GEDWFT3NEa/pub?output=csv")
+input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTl8IEk2fProQorMu5xKQPdMXl3OQp-c0f6eBXitv0BiVFZ3JSJCde0PtbFXuETgguf6vK8b43FDX1C/pub?gid=541627250&single=true&output=csv", show_col_types = FALSE)
 ```
 
 Preview data:
@@ -301,14 +301,14 @@ Information for `establishmentMeans` is contained in the field `origin`.
 
 ```{r}
 distribution %>%
-  group_by(origin) %>%
+  group_by(establishment_means) %>%
   count()
 ```
 
 Map values:
 
 ```{r}
-distribution %<>% mutate(dwc_establishmentMeans = origin) 
+distribution %<>% mutate(dwc_establishmentMeans = establishment_means) 
 ```
 
 ### eventDate
@@ -362,14 +362,14 @@ Inspect values:
 
 ```{r}
 distribution %>%
-  group_by(remarks) %>%
+  group_by(occurrence_remarks) %>%
   count()
 ```
 
 Map values:
 
 ```{r}
-distribution %<>% mutate(dwc_occurrenceRemarks = remarks) 
+distribution %<>% mutate(dwc_occurrenceRemarks = occurrence_remarks) 
 ```
 
 ### source
