@@ -111,142 +111,64 @@ taxon <-
   )
 ```
 
+## Distribution extension
 
+Create a dataframe with all data (including multiple distributions). Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/distribution.xml).
 
-## Create distribution extension
+Information for `eventDate` is contained in `date_first_observation` and `date_last_observation`, which we will express here in an ISO 8601 date format `yyyy/yyyy` (`start_date/end_date`).
 
-```{r}
-distribution <- input_data
-```
+Not all cells for `date_first_observation` (DFO) and/or `date_last_observation` (DLO) are populated. So, we used the following rules for those records: 
 
-Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/distribution.xml).
-
-### taxonID
-
-```{r}
-distribution %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### locationID
-
-Map values to [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country codes
+***case 1.*** If `DFO` is empty and `DLO` is empty, `eventDate` is `NA` 
+***case 2.***  If `DFO` is empty and `DLO` is not empty: eventDate = `/DLO`
+***case 3.*** If `DFO` is not empty and `DLO` is empty, eventDate is `DFO/`
 
 ```{r}
-distribution %<>% mutate(dwc_locationID = "ISO_3166-2:BE-VLG")
-```
-
-### locality
-
-Use the country name to map `locality`:
-
-```{r}
-distribution %<>% mutate(dwc_locality = location)
-```
-
-### countryCode
-
-```{r}
-distribution %<>% mutate(dwc_countryCode = country_code) 
-```
-
-### occurrenceStatus
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(occurrence_status) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status) 
-```
-
-### establishmentMeans
-
-Information for `establishmentMeans` is contained in the field `origin`. 
-
-```{r}
-distribution %>%
-  group_by(establishment_means) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_establishmentMeans = establishment_means) 
-```
-
-### eventDate
-
-Inspect `date_first_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_first_observation) %>%
-  count() 
-```
-
-Remove `?` or `<`
-
-```{r}
-distribution %<>% mutate(date_first_observation = str_remove_all(date_first_observation,"[?|<|>]"))
-```
-
-Inspect `date_last_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_last_observation) %>%
-  count() 
-```
-
-Combine `start_year` and `end_year` in an ranged `Date` (ISO 8601 format). If any those two dates is empty or the same, we use a single year, as a statement when it was seen once (either as a first record or a most recent record):
-
-```{r}
-distribution %<>% mutate(
-  dwc_eventDate = case_when(
+distribution <-
+  input_data %>%
+  # # pathway
+  # pivot_longer(
+  #   names_to = "key",
+  #   values_to = "pathway",
+  #   starts_with("introduction_pathway"),
+  #   values_drop_na = FALSE) %>%
+  # filter( # keep NA value for species with no pathway provided
+  #   !is.na(pathway) |
+  #     (is.na(pathway) & key == "introduction_pathway_1")
+  #   ) %>%
+  # other terms
+  mutate(
+    taxonID = taxon_id,
+    locationID = case_when(
+      location == "Flanders" ~ "ISO_3166-2:BE-VLG",
+      location == "Wallonia" ~ "ISO_3166-2:BE-WAL",
+      location == "Brussels" ~ "ISO_3166-2:BE-BRU"
+    ),
+    locality = case_when(
+      location == "Flanders" ~ "Flemish Region",
+      location == "Wallonia" ~ "Walloon Region",
+      location == "Brussels" ~ "Brussels-Capital Region"
+    ),
+    countryCode = country_code,
+    occurrenceStatus = occurrence_status,
+    establishmentMeans = establishment_means,
+    # degreeOfEstablishment = degree_of_establishment,
+    eventDate = case_when(
       is.na(date_first_observation) & is.na(date_last_observation) ~ NA,
       is.na(date_first_observation) ~ paste0("/", date_last_observation),
       is.na(date_last_observation) ~ paste0(date_first_observation, "/"),
       !is.na(date_first_observation) & !is.na(date_last_observation) ~ 
         paste(date_first_observation, date_last_observation, sep = "/")
-    ))
-```
-
-Inspect mapping:
-
-```{r}
-distribution %>%
-  group_by(date_first_observation, date_last_observation, dwc_eventDate) %>%
-  count() 
-```
-
-
-### occurrenceRemarks
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(occurrence_remarks) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_occurrenceRemarks = occurrence_remarks) 
-```
-
-### source
-
-```{r}
-distribution %<>% mutate(dwc_source = source) 
+    ),
+    source = source,
+    occurrenceRemarks = occurrence_remarks
+  ) %>%
+  select(
+    "taxonID", "locationID", "locality", "countryCode", "occurrenceStatus",
+    "establishmentMeans", # "degreeOfEstablishment", "pathway", 
+    "eventDate", "occurrenceRemarks", "source" 
+  ) %>%
+  arrange(taxonID)
 ```
 
 ## Create species profile extension
@@ -517,7 +439,6 @@ description_ext %<>% mutate(dwc_language = "en")
 Remove the original columns for each of the generated files:
 
 ```{r}
-distribution %<>% select(starts_with("dwc_")) 
 species_profile %<>% select(starts_with("dwc_")) 
 description_ext %<>% select(starts_with("dwc_"))
 ```
@@ -525,7 +446,6 @@ description_ext %<>% select(starts_with("dwc_"))
 Drop the `dwc_` prefix:
 
 ```{r}
-colnames(distribution) <- str_remove(colnames(distribution), "dwc_")
 colnames(species_profile) <- str_remove(colnames(species_profile), "dwc_")
 colnames(description_ext) <- str_remove(colnames(description_ext), "dwc_")
 ```
@@ -533,18 +453,11 @@ colnames(description_ext) <- str_remove(colnames(description_ext), "dwc_")
 Sort on `taxonID` to group description information per taxon:
 
 ```{r}
-distribution %<>% arrange(taxonID)
 species_profile %<>% arrange(taxonID)
 description_ext %<>% arrange(taxonID)
 ```
 
 
-
-Preview distribution extension:
-
-```{r}
-distribution %>% head(10)
-```
 
 Preview species profile extension:
 
