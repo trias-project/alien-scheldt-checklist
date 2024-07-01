@@ -29,7 +29,6 @@ Load libraries:
 
 ```{r message = FALSE}
 library(tidyverse)      # To do data science
-library(googlesheets4)  # To import data from google sheets
 library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
 library(janitor)        # To clean input data
@@ -40,54 +39,18 @@ library(inborutils)     # To wrap GBIF API data
 
 # Read source data
 
-Create a data frame `input_data` from the source data:
+The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1LeXXbry2ArK2rngsmFjz_xErwE1KwQ8ujtvHNmTVA6E/edit#gid=510059691).
+
+Read the relevant worksheet (published as csv):
 
 ```{r}
-input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTl8IEk2fProQorMu5xKQPdMXl3OQp-c0f6eBXitv0BiVFZ3JSJCde0PtbFXuETgguf6vK8b43FDX1C/pub?gid=541627250&single=true&output=csv", show_col_types = FALSE)
+raw_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTl8IEk2fProQorMu5xKQPdMXl3OQp-c0f6eBXitv0BiVFZ3JSJCde0PtbFXuETgguf6vK8b43FDX1C/pub?gid=541627250&single=true&output=csv", show_col_types = FALSE)
 ```
 
-Preview data:
+Copy the source data to the repository to keep track of changes:
 
 ```{r}
-input_data %>% head(n = 5)
-```
-
-## Add GBIF Scientific names
-
-Match the scientific names to the GBIF Taxonomic Backbone, using the `gbif_species_name_match` functions from the `inborutils`
-
-```{r}
-species_df_matched <- gbif_species_name_match(
-  df = input_data, 
-  name = "scientific name")
-```
-
-Merge with `input_data`
-
-```{r}
-input_data <-
-  input_data %>% 
-    left_join(
-      select(species_df_matched, `scientific name`, scientificName, matchType, confidence, rank),
-      by = "scientific name")
-```
-
-Put GBIF scientific names in column `scientific name (GBIF)`
-
-```{r}
-input_data <-
-  input_data %>% 
-    mutate(`GBIF scientific name` = scientificName) %>% 
-    mutate(`GBIF matchtype` = matchType) %>% 
-    mutate(`GBIF confidence` = confidence) %>% 
-    mutate(`GBIF rank` = rank) %>% 
-    select(-scientificName, -matchType, -confidence, -rank)
-```
-
-Save as raw data file:
-
-```{r}
-input_data %>% write.csv(here::here("data", "raw", "input_data.csv"), row.names = FALSE)
+write.csv(raw_data, here::here("data", "raw", "alien_scheldt_dump.csv"), row.names = FALSE)
 ```
 
 # Preprocessing
