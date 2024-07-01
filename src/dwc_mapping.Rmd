@@ -53,158 +53,66 @@ Copy the source data to the repository to keep track of changes:
 write.csv(raw_data, here::here("data", "raw", "alien_scheldt_dump.csv"), row.names = FALSE)
 ```
 
-# Preprocessing
+# Preprocessing: tidy data and add taxon ID's
 
-## Tidy data
-
-Clean dataset names:
+To link taxa with information in the extension(s), each taxon needs a unique and relatively stable `taxonID`. We have created one in the form of `dataset_shortname:taxon:hash`, where `hash` is unique code based on scientific name and kingdom. Once this is created, it is added to the source data. 
 
 ```{r}
-input_data %<>% clean_names()
-```
-
-Recode `date_last_observation` as character
-
-```{r}
-input_data %<>% mutate(date_last_observation = as.character(date_last_observation)) 
-```
-
-
-## Scientific Name
-
-We here use the scientific name provided by the GBIF backbone (`gbif_scientific_name`, to include authorship information).
-
-```{r}
-input_data %<>% mutate(scientificName = gbif_scientific_name)
-```
-
-## Generate Taxon ID
-
-To link taxa with information in the extension(s), each taxon needs a unique and relatively stable `taxonID`. Here we create one in the form of `dataset_shortname:taxon:hash`, where `hash` is unique code based on scientific name and kingdom (that will remain the same as long as scientific name and kingdom remain the same):
-
-```{r}
-vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
-input_data %<>% mutate(taxon_id = paste(
-  "alien-scheldt-checklist",
-  "taxon",
-  taxon_id_hash,
-  sep = ":"
-))
-```
-
-Preview data:
-
-```{r}
-input_data %>% head()
+input_data <-
+  raw_data %>%
+  remove_empty("rows") %>%
+  clean_names() %>%
+  mutate(
+    taxon_id = paste(
+      "alien-scheldt-checklist",
+      "taxon",
+      .data$taxon_id_hash,
+      sep = ":"
+    )
+  )
 ```
 
 # Darwin Core mapping
 
-## Create taxon core
+## Taxon core
 
-Create a dataframe with unique taxa only (ignoring multiple distribution rows):
-
-```{r}
-taxon <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
-
-Map the data to [Darwin Core Taxon](http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml).
-
-### language
+Create a dataframe with unique taxa only (ignoring multiple distribution rows). Map the data to [Darwin Core Taxon](http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml).
 
 ```{r}
-taxon %<>% mutate(dwc_language = "en")
+taxon <-
+  input_data %>%
+  distinct(taxon_id, .keep_all = TRUE) %>%
+  mutate(
+    language = "en",
+    license = "http://creativecommons.org/publicdomain/zero/1.0/",
+    rightsHolder = "INBO",
+    #accessRights = "https://www.inbo.be/en/norms-data-use",
+    datasetID = "",
+    institutionCode = "INBO",
+    datasetName = "Checklist of alien species in the Scheldt estuary in Flanders, Belgium",
+    taxonID = taxon_id,
+    scientificName = scientific_name,
+    kingdom = kingdom,
+    phylum = phylum,
+    class = class,
+    order = order,
+    family = family,
+    genus = genus,
+    taxonRank = taxon_rank,
+    nomenclaturalCode = nomenclatural_code,
+    .keep = "none"
+  ) %>% 
+  arrange(taxonID) %>% 
+  select(
+    "language", "license", "rightsHolder", # "accessRights", 
+    "datasetID", "institutionCode",
+    "datasetName", "taxonID", "scientificName", "kingdom", 
+    "phylum", "class", 
+    "order", "family", "genus", "taxonRank", "nomenclaturalCode"
+  )
 ```
 
-### license
 
-```{r}
-taxon %<>% mutate(dwc_license = "http://creativecommons.org/publicdomain/zero/1.0/") 
-```
-
-### rightsHolder
-
-```{r}
-taxon %<>% mutate(dwc_rightsHolder = "INBO")
-```
-
-### datasetID
-
-```{r}
-taxon %<>% mutate(dwc_datasetID = "") 
-```
-
-### institutionCode
-
-```{r}
-taxon %<>% mutate(dwc_institutionCode = "INBO")
-```
-
-### datasetName
-
-```{r}
-taxon %<>% mutate(dwc_datasetName = "Checklist of alien species in the Scheldt estuary in Flanders, Belgium")
-```
-
-### taxonID
-
-```{r}
-taxon %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### scientificName
-
-```{r}
-taxon %<>% mutate(dwc_scientificName = scientificName)
-```
-
-### kingdom
-
-```{r}
-taxon %<>% mutate(dwc_kingdom = kingdom)
-```
-
-### phylum
-
-```{r}
-taxon %<>% mutate(dwc_phylum = phylum)
-```
-
-### class
-
-```{r}
-taxon %<>% mutate(dwc_class = class)
-```
-
-### order
-
-```{r}
-taxon %<>% mutate(dwc_order = order)
-```
-
-### family
-
-```{r}
-taxon %<>% mutate(dwc_family = family)
-```
-
-### genus
-
-```{r}
-taxon %<>% mutate(dwc_genus = genus)
-```
-
-### taxonRank
-
-```{r}
-taxon %<>% mutate(dwc_taxonRank = taxon_rank)
-```
-
-### nomenclaturalCode
-
-```{r}
-taxon %<>% mutate(dwc_nomenclaturalCode = nomenclatural_code)
-```
 
 ## Create distribution extension
 
@@ -301,7 +209,10 @@ distribution %>%
 Combine `start_year` and `end_year` in an ranged `Date` (ISO 8601 format). If any those two dates is empty or the same, we use a single year, as a statement when it was seen once (either as a first record or a most recent record):
 
 ```{r}
-distribution %<>% mutate(dwc_eventDate = case_when(
+distribution %<>% mutate(
+  date_first_observation = as.character(date_first_observation),
+  date_last_observation = as.character(date_last_observation),
+  dwc_eventDate = case_when(
   is.na(date_first_observation) & is.na(date_last_observation) ~ "",
   is.na(date_first_observation) & !is.na(date_last_observation) ~ date_last_observation,
   !is.na(date_first_observation) & is.na(date_last_observation) ~ date_first_observation,
@@ -609,7 +520,6 @@ description_ext %<>% mutate(dwc_language = "en")
 Remove the original columns for each of the generated files:
 
 ```{r}
-taxon %<>% select(starts_with("dwc_")) 
 distribution %<>% select(starts_with("dwc_")) 
 species_profile %<>% select(starts_with("dwc_")) 
 description_ext %<>% select(starts_with("dwc_"))
@@ -618,7 +528,6 @@ description_ext %<>% select(starts_with("dwc_"))
 Drop the `dwc_` prefix:
 
 ```{r}
-colnames(taxon) <- str_remove(colnames(taxon), "dwc_")
 colnames(distribution) <- str_remove(colnames(distribution), "dwc_")
 colnames(species_profile) <- str_remove(colnames(species_profile), "dwc_")
 colnames(description_ext) <- str_remove(colnames(description_ext), "dwc_")
@@ -627,17 +536,12 @@ colnames(description_ext) <- str_remove(colnames(description_ext), "dwc_")
 Sort on `taxonID` to group description information per taxon:
 
 ```{r}
-taxon %<>% arrange(taxonID)
 distribution %<>% arrange(taxonID)
 species_profile %<>% arrange(taxonID)
 description_ext %<>% arrange(taxonID)
 ```
 
-Preview taxon core:
 
-```{r}
-taxon %>% head(10)
-```
 
 Preview distribution extension:
 
