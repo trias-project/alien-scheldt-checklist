@@ -199,242 +199,28 @@ species_profile <-
   arrange(taxonID)
 ```
 
+## Description extension
 
-## Create description extension
-
-In the description extension we want to include several important characteristics (hereafter refered to as descriptors) about the species:
-
-* Native range
-* Introduction pathway
-* Degree of establishment
-
-The structure of the description extension is slightly different from the other core/extension files: information for a specific taxon (linked to taxonID) is provided in **multiple** lines within the csv file: one line per taxon per descriptor. In this way, we are able to include multipele descriptors for each species. 
-
-For each descriptor, we create a separate dataframe to process the specific information. We always specify *which descriptor* we map (`type` column) and its *specific content* (`description` column). After the mapping of these Darwin Core terms `type` and `value`, we merge the dataframes to generate one single description extension. We then continue the mapping process by adding the other Darwin Core terms (which content is independent of the type of descriptor, such as `language`).
-
-### Native range
-
-Create separate dataframe:
-
-```{r start_native_range}
-native_range <- input_data
-```
-
-Show unique values:
+In the description extension we want to include the native range of a species
 
 ```{r}
-native_range %>%
-  distinct(native_range) %>%
-  arrange(native_range)
-```
-
-`native_range` contains multiple values (currently not more than 3), so we separate it in 3 columns:
-
-```{r}
-native_range %<>% separate(native_range, 
-  into = c("native_range_1", "native_range_2", "native_range_3"),
-  sep = "\\s\\|\\s",
-  remove = FALSE)
-```
-
-Gather in a `key` and `value` column:
-
-```{r}
-native_range %<>% gather(
-  key, value,
-  native_range_1, native_range_2, native_range_3,
-  na.rm = TRUE, # Also removes records for which there is no native_range_1
-  convert = FALSE
-)
-```
-
-Sumarize `value`
-
-```{r}
-native_range %>%
-  group_by(value) %>%
-  count()
-```
-
-Recode `probably the Americas` to `America`:
-
-```{r}
-native_range %<>% mutate(description = recode(value,
-  "probably the Americas" = "America"))
-```
-
-Drop the `key` and `value` columns:
-
-```{r}
-native_range %<>% select(-key, -value)
-```
-
-Create a `type` field to indicate the type of description:
-
-```{r}
-native_range %<>% mutate(type = "native range")
-```
-
-
-### Degree of establishment
-
-Here, we use the [invasion stage vocabulary from Blackburn et al. (2011)](http://doc.rero.ch/record/24725/files/bach_puf.pdf) to standardize this information.
-
-```{r}
-degree_of_establishment <- input_data
-```
-
-Summarize content
-
-```{r}
-degree_of_establishment %>%
-  group_by(degree_of_establishment) %>%
-  count()
-```
-
-Create `description`:
-
-```{r}
-degree_of_establishment %<>% mutate(description = degree_of_establishment)
-```
-
-Create `type`:
-
-```{r}
-degree_of_establishment %<>% mutate(type = "degree of establishment")
-```
-
-### Pathway of introduction
-
-Here, we use the vocabulary proposed by [CBD standard](https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf) to standardize this information.
-
-```{r}
-pathway <- input_data
-```
-
-Summarize content
-
-```{r}
-pathway %>%
-  group_by(introduction_pathway) %>%
-  count()
-```
-
-`pathway` contains multiple values (currently not more than 2), so we separate it in 2 columns:
-
-```{r}
-pathway %<>% separate(introduction_pathway, 
-  into = c("pathway_1", "pathway_2"),
-  sep = "\\s\\|\\s",
-  remove = FALSE)
-```
-
-Gather in a `key` and `value` column:
-
-```{r}
-pathway %<>% gather(
-  key, value,
-  pathway_1, pathway_2,
-  na.rm = TRUE, # Also removes records for which there is no native_range_1
-  convert = FALSE
-)
-```
-
-Add prefix `cbd_2014_pathway:`
-
-```{r}
-pathway %<>% mutate(mapped_value = paste ("cbd_2014_pathway", value, sep = ":"))
-```
-
-Sumarize `value`
-
-```{r}
-pathway %>%
-  group_by(mapped_value) %>%
-  count()
-```
-
-Generate `description`:
-
-```{r}
-pathway %<>% mutate(description = mapped_value) 
-```
-
-
-Drop the `key` and `value` columns:
-
-```{r}
-pathway %<>% select(-key, -value)
-```
-
-
-Create a `type` field to indicate the type of description:
-
-```{r}
-pathway %<>% mutate(type = "pathway")
-```
-
-
-### Union description
-
-Union native range and degree of establishment:
-
-```{r start_description_ext}
-description_ext <- bind_rows(native_range, degree_of_establishment, pathway)
-```
-
-Map the data to [Taxon Description](http://rs.gbif.org/extension/gbif/1.0/description.xml):
-
-#### taxonID
-
-```{r}
-description_ext %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-#### description
-
-```{r}
-description_ext %<>% mutate(dwc_description = description)
-```
-
-#### type
-
-```{r}
-description_ext %<>% mutate(dwc_type = type)
-```
-
-#### language
-
-```{r}
-description_ext %<>% mutate(dwc_language = "en")
-```
-
-# Post-processing
-
-Remove the original columns for each of the generated files:
-
-```{r}
-description_ext %<>% select(starts_with("dwc_"))
-```
-
-Drop the `dwc_` prefix:
-
-```{r}
-colnames(description_ext) <- str_remove(colnames(description_ext), "dwc_")
-```
-
-Sort on `taxonID` to group description information per taxon:
-
-```{r}
-description_ext %<>% arrange(taxonID)
-```
-
-
-
-Preview description extension:
-
-```{r}
-description_ext %>% head(10)
+description <-
+  input_data %>% 
+  # unique taxa only (ignoring multiple distribution rows)
+  distinct(taxon_id, .keep_all = TRUE) %>% 
+  # Separate values on `|` 
+  mutate(native_range = strsplit(native_range, "\\|")) %>% 
+  unnest(native_range) %>% 
+  filter(!is.na(native_range)) %>% 
+  mutate(
+    .keep = "none",
+    taxonID = taxon_id,
+    description = str_trim(native_range),
+    type = "native range",
+    language = "en"
+    ) %>% 
+  select("taxonID", "description", "type", "source", "language") %>% 
+  arrange(taxonID)
 ```
 
 Save to CSV:
@@ -443,7 +229,7 @@ Save to CSV:
 write_csv(taxon, here("data", "processed", "taxon.csv"), na = "")
 write_csv(distribution, here("data", "processed", "distribution.csv"), na = "")
 write_csv(species_profile, here("data", "processed", "speciesprofile.csv"), na = "")
-write_csv(description_ext, here("data", "processed", "description.csv"), na = "")
+write_csv(description, here("data", "processed", "description.csv"), na = "")
 ```
 
 
