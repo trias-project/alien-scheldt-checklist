@@ -209,15 +209,13 @@ Combine `start_year` and `end_year` in an ranged `Date` (ISO 8601 format). If an
 
 ```{r}
 distribution %<>% mutate(
-  date_first_observation = as.character(date_first_observation),
-  date_last_observation = as.character(date_last_observation),
   dwc_eventDate = case_when(
-  is.na(date_first_observation) & is.na(date_last_observation) ~ "",
-  is.na(date_first_observation) & !is.na(date_last_observation) ~ date_last_observation,
-  !is.na(date_first_observation) & is.na(date_last_observation) ~ date_first_observation,
-  date_first_observation == date_last_observation ~ date_last_observation,
-  TRUE ~ paste(date_first_observation, date_last_observation, sep = "/")
-))
+      is.na(date_first_observation) & is.na(date_last_observation) ~ NA,
+      is.na(date_first_observation) ~ paste0("/", date_last_observation),
+      is.na(date_last_observation) ~ paste0(date_first_observation, "/"),
+      !is.na(date_first_observation) & !is.na(date_last_observation) ~ 
+        paste(date_first_observation, date_last_observation, sep = "/")
+    ))
 ```
 
 Inspect mapping:
