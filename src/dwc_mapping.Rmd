@@ -12,11 +12,6 @@ output:
     toc: yes
     toc_depth: 3
     toc_float: yes
-#  pdf_document:
-#    df_print: kable
-#    number_sections: yes
-#    toc: yes
-#    toc_depth: 3
 ---
 
 This document describes how we map the checklist data to Darwin Core. The source file for this document can be found [here](https://github.com/trias-project/alien-scheldt-checklist/blob/master/src/dwc_mapping.Rmd).
@@ -29,12 +24,8 @@ Load libraries:
 
 ```{r message = FALSE}
 library(tidyverse)      # To do data science
-library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
 library(janitor)        # To clean input data
-library(digest)         # To generate hashes
-library(rgbif)          # To lookup names in the GBIF backbone taxonomy
-library(inborutils)     # To wrap GBIF API data
 ```
 
 # Read source data
@@ -219,7 +210,7 @@ description <-
     type = "native range",
     language = "en"
     ) %>% 
-  select("taxonID", "description", "type", "source", "language") %>% 
+  select("taxonID", "description", "type", "language") %>% 
   arrange(taxonID)
 ```
 
