@@ -30,7 +30,7 @@ library(janitor)        # To clean input data
 
 # Read source data
 
-The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1LeXXbry2ArK2rngsmFjz_xErwE1KwQ8ujtvHNmTVA6E/edit#gid=510059691).
+The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1LeXXbry2ArK2rngsmFjz_xErwE1KwQ8ujtvHNmTVA6E/edit?gid=541627250#gid=541627250).
 
 Read the relevant worksheet (published as csv):
 
